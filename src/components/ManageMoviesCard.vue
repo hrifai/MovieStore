@@ -53,17 +53,23 @@
       this.$on('closeEdit',() => {
         this.editing = false;
         this.loading = true;
-          MS.getMovies().then(data => {
-            this.movies = data;
-            setTimeout( () => {this.loading = false},1000);
-          });
+        setTimeout( () => {this.loading = false},1000);
       });
 
-      MS.getMovies().then(data => {
-        this.movies = data;
-        console.log(this.movies);
-        setTimeout(() => {this.loading = false}, 1000);
-      });
+      MS.db.ref('Movies').on('value', (snap) => {
+        this.movies = [];
+        snap.forEach(movie => {
+          var mobj = movie.val();
+          mobj.key = movie.key;
+          this.movies.push(mobj);
+        });
+        setTimeout( () => {this.loading = false},1000);
+      })
+
+      // MS.getMovies().then(data => {
+      //   this.movies = data;
+      //   setTimeout(() => {this.loading = false}, 1000);
+      // });
 
     },
     props: {
