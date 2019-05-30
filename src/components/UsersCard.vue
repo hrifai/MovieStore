@@ -50,21 +50,26 @@
       };
     },
     beforeMount() {
-      this.$on('closeEdit',() => {
-        this.editing = false;
-        this.loading = true;
-        setTimeout( () => {
-          MS.getUsers().then(data => {
-            this.users = data;
-            this.loading = false;
-          });
-        },2000);
-      });
+      // this.$on('closeEdit',() => {
+      //   this.editing = false;
+      //   this.loading = true;
+      //   setTimeout( () => {
+      //     MS.getUsers().then(data => {
+      //       this.users = data;
+      //       this.loading = false;
+      //     });
+      //   },2000);
+      // });
 
-      MS.getUsers().then(data => {
-        this.users = data;
-        setTimeout(() => {this.loading = false}, 2000);
-      });
+          MS.db.ref('Users').on('value', (snap) => {
+            this.users = [];
+            snap.forEach(order => {
+              var user = order.val();
+              user.key = order.key;
+              this.users.push(user);
+              setTimeout(()=>{this.loading = false},1500)
+            })
+          });
 
     },
     props: {
