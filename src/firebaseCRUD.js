@@ -65,7 +65,7 @@ MS.newOrder = (userKey,shipping,payment, movies) => {
     totalPrice: total,
     shipping:shipping,
     payment:payment,
-    time: d.toTimeString(),
+    time: d.toString(),
     movies: MS.transformMoviesArray(movies)
   }
 };

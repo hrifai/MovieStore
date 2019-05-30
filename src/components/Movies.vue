@@ -6,8 +6,9 @@
       </v-flex>
     <v-flex xs5>
         <v-text-field
+          v-if="loading == false"
           @click:append="searchMovies()"
-          placeholder="Search..."
+          placeholder="Search via title,key words or year..."
           single-line
           v-model="search"
           append-icon="search"
@@ -51,6 +52,22 @@
       </v-card>
     </v-dialog>
 
+    <v-dialog fullscreen v-model="searchScreen">
+      <v-card dark>
+        <v-btn fab flat @click="searchScreen=false"><v-icon>close</v-icon></v-btn>
+        <v-container grid-list-md>
+          <v-layout v-if="searchResults.length > 0" row wrap>
+            <v-flex xs3 v-for="movie in searchResults" :key="movie.key">
+              <movie-tile :movie="movie"></movie-tile>
+            </v-flex>
+          </v-layout>
+          <v-layout v-else row wrap>
+            <v-layout class="headline">No Results Found</v-layout>
+          </v-layout>
+        </v-container>
+      </v-card>
+    </v-dialog>
+
   </v-container>
 </template>
 
@@ -75,7 +92,9 @@
         timeout: 0,
         search: "",
         quetotal: null,
-        loading: true
+        loading: true,
+        searchScreen: false,
+        searchResults: []
       };
     },
     beforeMount() {
@@ -110,9 +129,10 @@
         }
       },
       searchMovies(){
-        this.movies = movies.filter(movie => {
-          return movie.Name.toLowerCase().includes(this.search.toLowerCase());
-        })
+        this.searchResults = this.movies.filter(movie => {
+          return movie.Name.toLowerCase().includes(this.search.toLowerCase()) || movie.Description.toLowerCase().includes(this.search.toLowerCase()) || movie.Year.toLowerCase().includes(this.search.toLowerCase());
+        });
+        this.searchScreen = true;
       },
       getQueTotal() {
         var count = 0;

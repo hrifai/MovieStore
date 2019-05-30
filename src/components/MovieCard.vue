@@ -81,9 +81,6 @@
           color: String,
           selectedId: String,
           ActiveUser: Object
-      },
-      firebase: {
-        movies: MS.db.ref('Movies'),
       }
     }
 </script>

@@ -2,6 +2,18 @@
   <div>
   <v-container grid-list-md>
     <v-layout justify-center class="headline pt-3">All Users</v-layout>
+      <v-flex xs12>
+        <v-text-field
+          v-if="loading==false"
+          @click:append="searchUsers()"
+          placeholder="Search via name, email, city or 'staff'"
+          single-line
+          v-model="search"
+          append-icon="search"
+          color="white"
+          hide-details
+        ></v-text-field>
+      </v-flex>
     <v-layout row wrap>
       <v-flex xs4 v-for="user in users" :key="user['key']">
         <v-container>
@@ -27,6 +39,22 @@
       </v-card>
     </v-dialog>
 
+    <v-dialog fullscreen v-model="searchScreen">
+      <v-card dark>
+        <v-btn fab flat @click="searchScreen=false"><v-icon>close</v-icon></v-btn>
+        <v-container grid-list-md>
+          <v-layout v-if="searchResults.length > 0" row wrap>
+            <v-flex xs4 v-for="user in searchResults" :key="user.key">
+              <v-btn color="red darken-3" @click="editUser(user)">{{user.First_name}} {{user.Last_name}}</v-btn>
+            </v-flex>
+          </v-layout>
+          <v-layout v-else row wrap>
+            <v-layout class="headline">No Results Found</v-layout>
+          </v-layout>
+        </v-container>
+      </v-card>
+    </v-dialog>
+
   </div>
 </template>
 
@@ -44,22 +72,20 @@
         staff: [],
         buttonColor: "red darken-2",
         subColor: "#ab302f",
+        searchResults:[],
+        search: "",
+        searchScreen: false,
         loading: true,
         current: {},
         editing: false
       };
     },
     beforeMount() {
-      // this.$on('closeEdit',() => {
-      //   this.editing = false;
-      //   this.loading = true;
-      //   setTimeout( () => {
-      //     MS.getUsers().then(data => {
-      //       this.users = data;
-      //       this.loading = false;
-      //     });
-      //   },2000);
-      // });
+      this.$on('closeEdit',() => {
+        this.editing = false;
+        this.loading = true;
+        setTimeout(()=>{this.loading = false},1500)
+      });
 
           MS.db.ref('Users').on('value', (snap) => {
             this.users = [];
@@ -80,7 +106,19 @@
         this.editing = true;
         this.current = user;
         this.$emit('reloadData', user.key);
-      }
+      },
+      searchUsers(){
+        if(this.search !== 'staff') {
+          this.searchResults = this.users.filter(user => {
+            return user.First_name.toLowerCase().includes(this.search.toLowerCase()) || user.Last_name.toLowerCase().includes(this.search.toLowerCase()) || user.ShippingInfo.city.toLowerCase().includes(this.search.toLowerCase());
+          });
+        } else {
+          this.searchResults = this.users.filter(user => {
+            return user.isAdmin == true;
+          });
+        }
+        this.searchScreen = true;
+      },
     }
   };
 </script>

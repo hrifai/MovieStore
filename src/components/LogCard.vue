@@ -58,8 +58,8 @@
       this.loading = true;
       MS.db.ref('Users/'+this.ActiveUser.key).once('value', (snap) => {
         var user = snap.val();
-        this.login = user.Login.split(',').map(d => {return new Date(d).toUTCString();});;
-        this.logout = user.Logout.split(',').map(d => {return new Date(d).toUTCString();});;
+        this.login = user.Login.split(',').map(d => {return new Date(d).toUTCString();});
+        this.logout = user.Logout.split(',').map(d => {return new Date(d).toUTCString();});
         this.loading = false;
       });
     },

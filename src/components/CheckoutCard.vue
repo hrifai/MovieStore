@@ -92,10 +92,11 @@
 
           </v-stepper-items>
         </v-stepper>
+      {{currentStep}}
 
-        <v-btn fab absolute bottom left color="primary" :disabled="parseInt(currentStep) === 1 || parseInt(currentStep) === 0" @click="currentStep--"><v-icon>arrow_back</v-icon></v-btn>
-        <v-btn fab absolute bottom v-if="currentStep < 4" right color="primary" @click="currentStep++"><v-icon>arrow_forward</v-icon></v-btn>
-        <v-btn fab absolute bottom v-if="currentStep >= 4" right color="green" @click="confirm = true"><v-icon>done</v-icon></v-btn>
+        <v-btn fab absolute bottom left color="primary" :disabled="parseInt(currentStep) === 1 || parseInt(currentStep) === 0" @click="stepper(-1)"><v-icon>arrow_back</v-icon></v-btn>
+        <v-btn fab absolute bottom v-if="currentStep < 4" right color="primary" @click="stepper(1)"><v-icon>arrow_forward</v-icon></v-btn>
+        <v-btn fab absolute bottom v-if="currentStep >= 4" right color="green" @click="validateOrder()"><v-icon>done</v-icon></v-btn>
 
         </v-card>
 
@@ -108,6 +109,15 @@
             <v-btn color="red darken-2" @click="confirm=false"><v-icon>close</v-icon></v-btn>
           </v-card>
         </v-dialog>
+
+    <v-dialog width="300" v-model="invalid">
+      <v-card color="red darken-2" dark>
+        <v-card-text>
+          Please make sure all fields are filled in before proceeding.
+        </v-card-text>
+        <v-btn color="green darken-2" @click="invalid=false"><v-icon>done</v-icon></v-btn>
+      </v-card>
+    </v-dialog>
 
  </div>
 
@@ -133,17 +143,45 @@
         currentStep: 0,
         refer: {},
         buttonColor: 'white',
-        confirm: false
+        confirm: false,
+        invalid: false
       };
     },
     methods: {
       removeMovie(movie){
         this.queue = this.queue.filter(e => e.Name !== movie.Name);
       },
+      validateOrder(){
+      if (this.currentStep == 4){
+          if(this.ActiveUser.PaymentDetails['cardNumber'] == '' || this.ActiveUser.PaymentDetails['exp'] == '' || this.ActiveUser.PaymentDetails['cvc'] == ''){
+            this.invalid = true;
+          } else {
+           this.confirm = true;
+          }
+        }
+      },
       makeOrder(){
         var orderObj = MS.addOrder(this.ActiveUser['key'],this.ActiveUser.ShippingInfo, this.ActiveUser.PaymentDetails, this.queue);
         this.confirm = false;
         this.$router.push({name: 'reciept', params: {Order:orderObj}})
+      },
+      stepper(step){
+        if(this.currentStep == 2){
+          if(this.ActiveUser.First_Name == '' || this.ActiveUser.Last_Name == '' || this.ActiveUser.Email == ''){
+            this.invalid = true
+          } else {
+            this.currentStep = parseInt(this.currentStep) + parseInt(step);
+          }
+        } else if (this.currentStep == 3){
+          if(this.ActiveUser.ShippingInfo['address'] == '' || this.ActiveUser.ShippingInfo['city'] == ''|| this.ActiveUser.ShippingInfo['postCode'] == ''){
+            this.invalid = true;
+          } else {
+            this.currentStep = parseInt(this.currentStep) + parseInt(step);
+          }
+        }
+        else {
+          this.currentStep = parseInt(this.currentStep) + parseInt(step);
+        }
       }
     }
   }

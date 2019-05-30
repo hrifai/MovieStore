@@ -5,11 +5,11 @@
       <v-layout row>
         <v-flex xs8>
         </v-flex>
-        <v-flex xs3>
-          {{search}}
+        <v-flex xs5>
           <v-text-field
-            @click:append="searchMovies()"
-            placeholder="Search..."
+            v-if="loading==false"
+            @click:append="searchOrders()"
+            placeholder="Search via order number or date..."
             single-line
             v-model="search"
             append-icon="search"
@@ -33,6 +33,22 @@
         <v-card-text>
           Loading Orders...
         </v-card-text>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog fullscreen v-model="searchScreen">
+      <v-card dark>
+        <v-btn fab flat @click="searchScreen=false"><v-icon>close</v-icon></v-btn>
+        <v-container grid-list-md>
+        <v-layout v-if="searchResults.length > 0" row wrap>
+          <v-flex xs4 v-for="order in searchResults" :key="order.key">
+            <order-tile :order="order"></order-tile>
+          </v-flex>
+        </v-layout>
+        <v-layout v-else row wrap>
+          <v-layout class="headline">No Results Found</v-layout>
+        </v-layout>
+        </v-container>
       </v-card>
     </v-dialog>
 
@@ -60,8 +76,11 @@
       return {
         subColor: "#ab302f",
         orders: [],
+        searchResults:[],
+        search: "",
         loading: false,
         current: {},
+        searchScreen: false
       };
     },
     methods: {
@@ -69,6 +88,12 @@
         MS.getOrders(this.ActiveUser.key).then(orders => {
            this.orders = orders;
         });
+      },
+      searchOrders(){
+        this.searchResults = this.orders.filter(order => {
+          return order.key.toLowerCase().includes(this.search.toLowerCase()) || order.time.toLowerCase().includes(this.search.toLowerCase());
+        });
+        this.searchScreen = true;
       },
       ObjToArray(obj){
         var arr = new Array(Object.keys(obj).length);
