@@ -13,7 +13,7 @@
                   <v-text-field v-model="password" :color="buttonColor" label="Password" type="password" required></v-text-field>
                 </v-flex>
                 <v-flex xs12 >
-                  <router-link to="/register"><em><small>Don't have an account? Register here</small></em></router-link>
+                  <router-link to="/register"><em><small>Don't have an account? Register here</small></em></router-link><br>
                 </v-flex>
               </v-layout>
             </v-container>
@@ -21,6 +21,7 @@
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn :color="buttonColor" absolute bottom right fab @click="handleLogin()"><v-icon>done</v-icon></v-btn>
+            <v-btn :color="buttonColor" absolute bottom left fab @click="$router.push('/movies')"><v-icon>fas fa-film</v-icon></v-btn>
           </v-card-actions>
       </v-card>
 

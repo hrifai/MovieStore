@@ -66,11 +66,6 @@
         setTimeout( () => {this.loading = false},1000);
       })
 
-      // MS.getMovies().then(data => {
-      //   this.movies = data;
-      //   setTimeout(() => {this.loading = false}, 1000);
-      // });
-
     },
     props: {
       ActiveUser: Object

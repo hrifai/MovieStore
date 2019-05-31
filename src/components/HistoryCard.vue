@@ -40,7 +40,8 @@
       <v-card dark>
         <v-btn fab flat @click="searchScreen=false"><v-icon>close</v-icon></v-btn>
         <v-container grid-list-md>
-        <v-layout v-if="searchResults.length > 0" row wrap>
+          <v-layout justify-center class="headline pb-3">Search Results</v-layout>
+          <v-layout v-if="searchResults.length > 0" row wrap>
           <v-flex xs4 v-for="order in searchResults" :key="order.key">
             <order-tile :order="order"></order-tile>
           </v-flex>

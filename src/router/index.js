@@ -42,6 +42,7 @@ const router = new Router({
       path: '/movies',
       name: 'movies',
       component: Movies,
+      props:true
     },{
       path: '/managemovies',
       name: 'manage movies',

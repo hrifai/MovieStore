@@ -92,7 +92,6 @@
 
           </v-stepper-items>
         </v-stepper>
-      {{currentStep}}
 
         <v-btn fab absolute bottom left color="primary" :disabled="parseInt(currentStep) === 1 || parseInt(currentStep) === 0" @click="stepper(-1)"><v-icon>arrow_back</v-icon></v-btn>
         <v-btn fab absolute bottom v-if="currentStep < 4" right color="primary" @click="stepper(1)"><v-icon>arrow_forward</v-icon></v-btn>

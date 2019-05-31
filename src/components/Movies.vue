@@ -2,13 +2,14 @@
   <v-container grid-list-md>
     <v-layout justify-center class="headline pb--4">All Movies</v-layout>
     <v-layout row>
+      <v-btn v-if="ActiveUser === 'guest'" fab color="red darken-2" @click="$router.push('/')"><v-icon>home</v-icon></v-btn>
       <v-flex xs7>
       </v-flex>
     <v-flex xs5>
-        <v-text-field
+      <v-text-field
           v-if="loading == false"
           @click:append="searchMovies()"
-          placeholder="Search via title,key words or year..."
+          placeholder="Search via title key words or year..."
           single-line
           v-model="search"
           append-icon="search"
@@ -22,7 +23,7 @@
     <v-layout row wrap>
       <v-flex xs3 v-for="movie in movies" :key="movie['.key']">
         <v-container>
-          <movie-tile :movie="movie"></movie-tile>
+          <movie-tile :isGuest="ActiveUser" :movie="movie"></movie-tile>
         </v-container>
     </v-flex>
   </v-layout>
@@ -56,9 +57,10 @@
       <v-card dark>
         <v-btn fab flat @click="searchScreen=false"><v-icon>close</v-icon></v-btn>
         <v-container grid-list-md>
+          <v-layout justify-center class="headline pb-3">Search Results</v-layout>
           <v-layout v-if="searchResults.length > 0" row wrap>
             <v-flex xs3 v-for="movie in searchResults" :key="movie.key">
-              <movie-tile :movie="movie"></movie-tile>
+              <movie-tile :isGuest="ActiveUser" :movie="movie"></movie-tile>
             </v-flex>
           </v-layout>
           <v-layout v-else row wrap>
@@ -119,6 +121,9 @@
 
     },
     mounted(){
+    },
+    props:{
+      ActiveUser: Object
     },
     methods: {
       handleRent() {

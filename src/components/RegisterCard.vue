@@ -68,15 +68,21 @@
       addUser: function () {
         MS.addUser(this.fname,this.lname,this.email,this.age,this.password, this.isAdmin);
         this.saved = true;
-        if(ActiveUser === 'guest'){
+        if(this.ActiveUser === 'guest'){
           setTimeout(() => {
             this.saved = false;
             this.$router.push('/');
-          }, 3000);
+          }, 2000);
         }else {
           setTimeout(() => {
+            this.fname = "";
+            this.lname= "";
+            this.email= "";
+            this.age= "";
+            this.password= "";
+            this.isAdmin = "";
             this.saved = false;
-          }, 3000);
+          }, 1500);
         }
       },
     },

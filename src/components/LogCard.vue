@@ -10,9 +10,15 @@
         <v-card-text>
 
           <v-layout justify-center>
-            <v-btn @click="order('a')">Order Ascending</v-btn>
-            <v-btn @click="order('d')">Order Descending</v-btn>
-            <v-btn @click="clearLogs()">Clear All Logs</v-btn>
+            <v-container grid-list-md>
+              <v-layout justify-center class="ml-4 pl-4" row>
+                <v-flex xs5><v-text-field color="red darken-2" v-model="start" label="Start Date"></v-text-field></v-flex>
+                <v-flex xs5><v-text-field color="red darken-2" v-model="end" label="End Date"></v-text-field></v-flex>
+                <v-flex xs1><v-btn fab flat @click="filter()"><v-icon>search</v-icon></v-btn></v-flex>
+                <v-flex xs1><v-btn fab flat @click="clearSearch()"><v-icon>close</v-icon></v-btn></v-flex>
+              </v-layout>
+            </v-container>
+            <v-btn fab absolute bottom right color="red darken-2"@click="confirm=true"><v-icon>close</v-icon></v-btn>
           </v-layout>
 
             <v-container grid-list-md>
@@ -20,7 +26,7 @@
 
               <v-layout row wrap>
                 <v-flex xs4 v-for="log in login" :key="log">
-                  {{log}}
+                  {{new Date(log).toDateString() + ':' + new Date(log).toLocaleString()}}
                 </v-flex>
               </v-layout>
 
@@ -28,7 +34,7 @@
 
               <v-layout row wrap>
                 <v-flex xs4 v-for="log in logout" :key="log">
-                  {{log}}
+                  {{new Date(log).toDateString() + ':' + new Date(log).toLocaleString()}}
                 </v-flex>
               </v-layout>
 
@@ -45,6 +51,16 @@
       </v-card>
     </v-dialog>
 
+    <v-dialog width="300" v-model="confirm">
+      <v-card dark>
+        <v-card-text>
+          Are you sure you want to clear your logs? This cannot be undone.
+        </v-card-text>
+        <v-btn color="green darken-2" @click="clearLogs()"><v-icon>done</v-icon></v-btn>
+        <v-btn color="red darken-2" @click="confirm=false"><v-icon>close</v-icon></v-btn>
+      </v-card>
+    </v-dialog>
+
   </v-layout>
 </template>
 
@@ -53,13 +69,14 @@
   import MS from '../firebaseCRUD'
 
   export default {
+    components: {},
     beforeMount(){
       // this.$parent.$parent.$parent.ActiveUser = MS.getRefreshedActiveUser(this.ActiveUser.key);
       this.loading = true;
-      MS.db.ref('Users/'+this.ActiveUser.key).once('value', (snap) => {
+      MS.db.ref('Users/'+this.ActiveUser.key).on('value', (snap) => {
         var user = snap.val();
-        this.login = user.Login.split(',').map(d => {return new Date(d).toUTCString();});
-        this.logout = user.Logout.split(',').map(d => {return new Date(d).toUTCString();});
+        this.login = user.Login.split(',');
+        this.logout = user.Logout.split(',');
         this.loading = false;
       });
     },
@@ -69,28 +86,46 @@
         cardColor: "red darken-4",
         login: [],
         logout: [],
-        loading: true
+        loading: true,
+        confirm: false,
+        start: "",
+        end: ""
       };
     },
     props: {
       ActiveUser: Object
     },
     methods:{
-      order(t){
-        this.login = this.login.sort((a,b) => {
-          return a - b
-        });
-        if(t == 'd'){
-          this.login.reverse();
-          this.logout.reverse();
-          this.t = 'd';
-        }
+      filter(){
+        this.clearSearch();
+        this.login = this.filterArray(this.login);
+        this.logout = this.filterArray(this.logout);
       },
       clearLogs(){
         MS.db.ref('Users/'+this.ActiveUser.key+'/Login').remove();
         MS.db.ref('Users/'+this.ActiveUser.key+'/Logout').remove();
         this.login = [];
         this.logout = [];
+      },
+      clearSearch(){
+        MS.db.ref('Users/'+this.ActiveUser.key).on('value', (snap) => {
+          var user = snap.val();
+          this.login = user.Login.split(',');
+          this.logout = user.Logout.split(',');
+        });
+      },
+      formatDate(dateString){
+        var comps = dateString.split('/');
+        dateString = comps[1]+'/'+comps[0]+'/'+comps[2];
+        return dateString
+      },
+      filterArray(array){
+        return array.filter(currentDate => {
+          var check = new Date(currentDate).setHours(0,0,0,0);
+          var fromDate = new Date(this.formatDate(this.start)).setHours(0,0,0,0);
+          var to = new Date(this.formatDate(this.end)).setHours(0,0,0,0);
+          return (check >= fromDate && check <= to);
+        });
       }
     }
   };

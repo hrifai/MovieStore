@@ -51,7 +51,7 @@
 
 <script>
 
-  import MS from '../firebaseCRUD'
+  import MS from '../firebaseCRUD';
 
     export default {
         name: "MovieCard",
