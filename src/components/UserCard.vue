@@ -51,7 +51,6 @@
             <v-btn :color="buttonColor" absolute bottom right fab @click="save()"><v-icon>done</v-icon></v-btn>
             <v-btn :color="buttonColor" absolute bottom left fab @click="deleteDialog = true"><v-icon>delete</v-icon></v-btn>
           </v-card-actions>
-        {{ActiveUser}}
       </v-card>
   </v-layout>
 
