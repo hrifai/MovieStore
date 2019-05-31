@@ -2,6 +2,15 @@
 
   <div>
     <v-card>
+      <v-alert v-if="isSaved()" :value="alert" color="dark" transition="scale-transition">
+        <em>Order Status: Not finalised</em><span class="pl-4">Save your order for later</span><v-btn @click="saveOrder()" absolute right small flat fab><v-icon>save</v-icon></v-btn>
+      </v-alert>
+
+      <v-alert v-else :value="alert" color="dark" transition="scale-transition">
+        <em>Order Status: Not finalised</em><span class="pl-4">Load your previously saved order or save this one...</span>
+          <v-btn @click="saveOrder()"  small flat fab><v-icon>save</v-icon></v-btn><v-btn @click="loadSave()"  small flat fab><v-icon>done</v-icon></v-btn>
+      </v-alert>
+
         <v-stepper style="width:850px;height:700px;" v-model="currentStep">
           <v-stepper-header>
             <v-stepper-step :complete="currentStep > 1" step="1">Review Order</v-stepper-step>
@@ -118,6 +127,15 @@
       </v-card>
     </v-dialog>
 
+    <v-dialog width="300" v-model="saved">
+      <v-card color="red darken-2" dark>
+        <v-card-text>
+          Order saved, you may now leave and load your order later.
+        </v-card-text>
+        <v-btn color="green darken-2" @click="saved=false"><v-icon>done</v-icon></v-btn>
+      </v-card>
+    </v-dialog>
+
  </div>
 
 </template>
@@ -143,7 +161,9 @@
         refer: {},
         buttonColor: 'white',
         confirm: false,
-        invalid: false
+        invalid: false,
+        alert: true,
+        saved: false
       };
     },
     methods: {
@@ -159,10 +179,21 @@
           }
         }
       },
+      saveOrder(){
+        this.saved = true;
+        setTimeout(() => {this.saved = false;},1500);
+        localStorage.lastOrder = JSON.stringify(this.queue);
+      },
+      loadSave(){
+        this.queue = this.queue.concat(JSON.parse(localStorage.lastOrder));
+      },
       makeOrder(){
         var orderObj = MS.addOrder(this.ActiveUser['key'],this.ActiveUser.ShippingInfo, this.ActiveUser.PaymentDetails, this.queue);
         this.confirm = false;
         this.$router.push({name: 'reciept', params: {Order:orderObj}})
+      },
+      isSaved(){
+        return localStorage.lastOrder === undefined;
       },
       stepper(step){
         if(this.currentStep == 2){
