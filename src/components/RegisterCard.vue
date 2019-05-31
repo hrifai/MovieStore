@@ -22,7 +22,7 @@
                   <v-text-field v-model="password" :color="buttonColor" label="Password" type="password" required></v-text-field>
                 </v-flex>
                 <v-flex v-if="ActiveUser !== 'guest'" xs12>
-                <v-checkbox color="red darken-2" v-model="isAdmin" label="Admin/Staff"></v-checkbox>
+                  <v-checkbox color="red darken-2" v-model="isAdmin" label="Admin/Staff"></v-checkbox>
                 </v-flex>
               </v-layout>
             </v-container>

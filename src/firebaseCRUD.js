@@ -129,7 +129,8 @@ MS.log = (key,type) => {
   MS.db.ref('Users/'+key+'/'+type).once('value', (e) => {
     var current = e.val();
     var d = MS.getDate();
-    var log = current+'' !== 'null' ? current+','+d : d;
+    var log = (current !== null || current !== '') ? current+','+d : d;
+    if(log[0] == ','){log = log.substr(1);}
     MS.db.ref('Users/'+key+'/'+type).set(log);
   })
 };

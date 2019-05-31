@@ -51,6 +51,7 @@
             <v-btn :color="buttonColor" absolute bottom right fab @click="save()"><v-icon>done</v-icon></v-btn>
             <v-btn :color="buttonColor" absolute bottom left fab @click="deleteDialog = true"><v-icon>delete</v-icon></v-btn>
           </v-card-actions>
+        {{ActiveUser}}
       </v-card>
   </v-layout>
 
@@ -80,6 +81,14 @@
   import MS from '../firebaseCRUD'
 
   export default {
+    beforeMount(){
+      MS.db.ref('Users/'+this.ActiveUser.key+'/Logout').once('value', (snap) => {
+        this.ActiveUser.Login = snap.val();
+      });
+      MS.db.ref('Users/'+this.ActiveUser.key+'/Login').once('value', (snap) => {
+        this.ActiveUser.Logout = snap.val();
+      })
+    },
     data() {
       return {
         buttonColor: "#ab302f",
