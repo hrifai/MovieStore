@@ -11,7 +11,7 @@
     "deploy": "npm run build && node deployScriptFireBase && firebase deploy"
   },
   "dependencies": {
-    "axios": "^0.18.0",
+    "axios": "^0.21.1",
     "copy-dir": "^0.4.0",
     "firebase": "^5.9.2",
     "nprogress": "^0.2.0",
